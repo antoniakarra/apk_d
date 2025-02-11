@@ -3191,7 +3191,6 @@ END$$
 
 DELIMITER ;
 
-
 DELIMITER $$
 
 CREATE TRIGGER prevent_fields_apk_deletion
@@ -3200,7 +3199,7 @@ FOR EACH ROW
 BEGIN
    
     SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Δεν επιτρέπεται η διαγραφή πεδίων από τον πίνακα fields_apk.';
+    SET MESSAGE_TEXT = 'Δεν επιτρέπεται η διαγραφή πεδίων ΑΠΚ.';
 END$$
 
 DELIMITER ;
@@ -3221,7 +3220,7 @@ BEGIN
     -- Αν η τιμή είναι "άλλο" και το justification είναι κενό, σφάλμα
     IF field_apk_value = 'άλλο' AND (NEW.justification IS NULL OR NEW.justification = '') THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Το πεδίο της αιτιολόγησης είναι υποχρεωτικό όταν επιλέγεται "άλλο" στο πεδίο field_apk.';
+        SET MESSAGE_TEXT = 'Η αιτιολόγηση είναι υποχρεωτική όταν επιλέγεται "άλλο" στο πεδίο ΑΠΚ.';
     END IF;
 END $$
 
@@ -3315,6 +3314,28 @@ DELIMITER ;
 
 DELIMITER $$
 
+CREATE TRIGGER `check_justification_not_empty_on_update`
+BEFORE UPDATE ON `apk`.`stoixeio_fields_apk`
+FOR EACH ROW
+BEGIN
+    -- Έλεγχος αν το πεδίο field_apk έχει την τιμή "άλλο"
+    DECLARE field_apk_value ENUM('προφορικές παραδόσεις και εκφράσεις', 'επιτελεστικές τέχνες', 'κοινωνικές πρακτικές-τελετουργίες-εορταστικές εκδηλώσεις', 'γνώσεις και πρακτικές που αφορούν τη φύση και το σύμπαν', 'τεχνογνωσία που συνδέεται με την παραδοσιακή χειροτεχνία', 'άλλο');
+    
+    SELECT `field_apk` INTO field_apk_value
+    FROM `apk`.`fields_apk`
+    WHERE `idfields_apk` = NEW.fields_apk_idfields_apk;
+    
+    -- Αν η τιμή είναι "άλλο" και το justification γίνεται κενό, αποτρέπεται η ενημέρωση
+    IF field_apk_value = 'άλλο' AND (NEW.justification IS NULL OR NEW.justification = '') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Η αιτιολόγηση δεν μπορεί να γίνει κενή όταν το πεδίο ΑΠΚ είναι "άλλο".';
+    END IF;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
 CREATE TRIGGER after_update_stoixeio_fields_apk
 AFTER UPDATE ON `apk`.`stoixeio_fields_apk`
 FOR EACH ROW
@@ -3380,7 +3401,7 @@ BEGIN
     -- Αν υπάρχει μόνο μία εγγραφή, ακυρώνεται η διαγραφή
     IF fields_apk_count = 1 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Η τελευταία εγγραφή πεδίου για αυτό το στοιχείο δεν μπορεί να διαγραφεί.';
+        SET MESSAGE_TEXT = 'Η τελευταία εγγραφή πεδίου ΑΠΚ για αυτό το στοιχείο δεν μπορεί να διαγραφεί.';
     END IF;
 END$$
 

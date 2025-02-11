@@ -3925,7 +3925,7 @@ DELIMITER ;
 DELIMITER $$
 USE `apk`$$
 CREATE PROCEDURE `InsertStoixeio`(
-    IN name VARCHAR(100),
+    IN name VARCHAR(200),
     IN year YEAR,
     IN description VARCHAR(600),
     IN full_description TEXT,
@@ -3940,13 +3940,13 @@ CREATE PROCEDURE `InsertStoixeio`(
     IN facilities TEXT,   
     IN equipments TEXT, 
     IN products TEXT,
-	IN members TEXT,
+    IN members TEXT,
     IN society TEXT,  
     IN community TEXT,
     IN transmission TEXT,
     IN existing TEXT,
     IN future TEXT,
-	IN competent_persons TEXT,
+    IN competent_persons TEXT,
     OUT idStoixeio INT,
     OUT last_location_id INT 
 )

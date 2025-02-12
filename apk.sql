@@ -464,6 +464,7 @@ CREATE TABLE IF NOT EXISTS `apk`.`evidence` (
   CONSTRAINT `chk_file_name_not_empty` CHECK (TRIM(`file_name`) <> ''),
   CONSTRAINT `chk_file_type_not_empty` CHECK (TRIM(`file_type`) <> ''),
   CONSTRAINT `chk_file_hash_not_empty` CHECK (TRIM(`file_hash`) <> ''),
+  CONSTRAINT `chk_mime_type_not_empty` CHECK (TRIM(`mime_type`) <> ''),
   CONSTRAINT `chk_who_uploaded_it_not_empty` CHECK (TRIM(`who_uploaded_it`) <> ''),
   CONSTRAINT `chk_file_data_when_link` CHECK (
     NOT (`category` = 'link' AND `file_data` IS NOT NULL)
